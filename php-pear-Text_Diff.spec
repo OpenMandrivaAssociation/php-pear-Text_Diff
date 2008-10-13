@@ -5,7 +5,7 @@
 
 Summary:	%{_pearname} - Engine for performing and rendering text diffs
 Name:		php-pear-%{_pearname}
-Version:	1.0.0
+Version:	1.1.0
 Release:	%mkrel 1
 License:	PHP License
 Group:		Development/PHP
