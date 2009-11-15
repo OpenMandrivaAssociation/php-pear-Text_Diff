@@ -1,84 +1,62 @@
 %define		_class		Text
 %define		_subclass	Diff
-%define		_status		beta
-%define		_pearname	%{_class}_%{_subclass}
+%define		upstream_name	%{_class}_%{_subclass}
 
-Summary:	%{_pearname} - Engine for performing and rendering text diffs
-Name:		php-pear-%{_pearname}
+Name:		php-pear-%{upstream_name}
 Version:	1.1.1
-Release:	%mkrel 1
+Release:	%mkrel 2
+Summary:	Engine for performing and rendering text diffs
 License:	PHP License
 Group:		Development/PHP
-Source0:	http://pear.php.net/get/%{_pearname}-%{version}.tgz
 URL:		http://pear.php.net/package/Text_Diff/
+Source0:	http://download.pear.php.net/package/%{upstream_name}-%{version}.tgz
 Requires(post): php-pear
 Requires(preun): php-pear
 Requires:	php-pear
 BuildArch:	noarch
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-buildroot
+BuildRoot:	%{_tmppath}/%{name}-%{version}
 
 
 %description
 This package provides a text-based diff engine and renderers for
 multiple diff output formats. 
 
-In PEAR status of this package is: %{_status}.
-
 %prep
-
 %setup -q -c
-
-find . -type d -perm 0700 -exec chmod 755 {} \;
-find . -type f -perm 0555 -exec chmod 755 {} \;
-find . -type f -perm 0444 -exec chmod 644 {} \;
-
-for i in `find . -type d -name CVS` `find . -type f -name .cvs\*` `find . -type f -name .#\*`; do
-    if [ -e "$i" ]; then rm -rf $i; fi >&/dev/null
-done
+mv package.xml %{upstream_name}-%{version}/%{upstream_name}.xml
 
 %install
 rm -rf %{buildroot}
 
-install -d -m 755 %{buildroot}%{_datadir}/pear/%{_class}/%{_subclass}/Renderer
-install -d -m 755 %{buildroot}%{_datadir}/pear/%{_class}/%{_subclass}/Engine
+cd %{upstream_name}-%{version}
+pear install --nodeps --packagingroot %{buildroot} %{upstream_name}.xml
+rm -rf %{buildroot}%{_datadir}/pear/.??*
 
-install %{_pearname}-%{version}/*.php %{buildroot}%{_datadir}/pear/%{_class}
-install -m 644 %{_pearname}-%{version}/%{_subclass}/*.php \
-    %{buildroot}%{_datadir}/pear/%{_class}/%{_subclass}
-install -m 644 %{_pearname}-%{version}/%{_subclass}/Renderer/*.php \
-    %{buildroot}%{_datadir}/pear/%{_class}/%{_subclass}/Renderer
-install -m 644 %{_pearname}-%{version}/%{_subclass}/Engine/*.php \
-    %{buildroot}%{_datadir}/pear/%{_class}/%{_subclass}/Engine
+rm -rf %{buildroot}%{_datadir}/pear/docs
+rm -rf %{buildroot}%{_datadir}/pear/tests
 
-install -d -m 755 %{buildroot}%{_datadir}/pear/packages
-install -m0644 package.xml \
-    %{buildroot}%{_datadir}/pear/packages/%{_pearname}.xml
-
-%post
-if [ "$1" = "1" ]; then
-	if [ -x %{_bindir}/pear -a -f %{_datadir}/pear/packages/%{_pearname}.xml ]; then
-		%{_bindir}/pear install --nodeps -r %{_datadir}/pear/packages/%{_pearname}.xml
-	fi
-fi
-if [ "$1" = "2" ]; then
-	if [ -x %{_bindir}/pear -a -f %{_datadir}/pear/packages/%{_pearname}.xml ]; then
-		%{_bindir}/pear upgrade -f --nodeps -r %{_datadir}/pear/packages/%{_pearname}.xml
-	fi
-fi
-
-%preun
-if [ "$1" = 0 ]; then
-	if [ -x %{_bindir}/pear -a -f %{_datadir}/pear/packages/%{_pearname}.xml ]; then
-		%{_bindir}/pear uninstall --nodeps -r %{_pearname}
-	fi
-fi
+install -d %{buildroot}%{_datadir}/pear/packages
+install -m 644 %{upstream_name}.xml %{buildroot}%{_datadir}/pear/packages
 
 %clean
 rm -rf %{buildroot}
 
+%post
+%if %mdkversion < 201000
+pear install --nodeps --soft --force --register-only \
+    %{_datadir}/pear/packages/%{upstream_name}.xml >/dev/null || :
+%endif
+
+%preun
+%if %mdkversion < 201000
+if [ "$1" -eq "0" ]; then
+    pear uninstall --nodeps --ignore-errors --register-only \
+        %{pear_name} >/dev/null || :
+fi
+%endif
+
 %files
-%defattr(644,root,root,755)
-%doc %{_pearname}-%{version}/{docs/*,tests/}
-%{_datadir}/pear/%{_class}/*.php
-%{_datadir}/pear/%{_class}/%{_subclass}
-%{_datadir}/pear/packages/%{_pearname}.xml
+%defattr(-,root,root)
+%doc %{upstream_name}-%{version}/docs/*
+%{_datadir}/pear/%{_class}
+%{_datadir}/pear/packages/%{upstream_name}.xml
