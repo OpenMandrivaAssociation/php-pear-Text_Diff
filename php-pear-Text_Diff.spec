@@ -4,7 +4,7 @@
 
 Name:		php-pear-%{upstream_name}
 Version:	1.1.1
-Release:	%mkrel 3
+Release:	%mkrel 4
 Summary:	Engine for performing and rendering text diffs
 License:	PHP License
 Group:		Development/PHP
