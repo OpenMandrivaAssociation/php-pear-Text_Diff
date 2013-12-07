@@ -5,7 +5,7 @@
 Summary:	Engine for performing and rendering text diffs
 Name:		php-pear-%{modname}
 Version:	1.1.1
-Release:	10
+Release:	11
 License:	PHP License
 Group:		Development/PHP
 Url:		http://pear.php.net/package/Text_Diff/
