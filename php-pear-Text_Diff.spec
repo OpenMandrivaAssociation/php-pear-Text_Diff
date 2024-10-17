@@ -8,7 +8,7 @@ Version:	1.1.1
 Release:	16
 License:	PHP License
 Group:		Development/PHP
-Url:		http://pear.php.net/package/Text_Diff/
+Url:		https://pear.php.net/package/Text_Diff/
 Source0:	http://download.pear.php.net/package/%{modname}-%{version}.tgz
 BuildArch:	noarch
 BuildRequires:	php-pear
